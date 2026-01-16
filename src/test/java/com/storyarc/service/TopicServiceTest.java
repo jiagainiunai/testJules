@@ -1,5 +1,6 @@
 package com.storyarc.service;
 
+import com.storyarc.dto.NewsResult;
 import com.storyarc.entity.Topic;
 import com.storyarc.entity.TopicStatus;
 import com.storyarc.mapper.TopicMapper;
@@ -10,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -24,8 +26,26 @@ public class TopicServiceTest {
     @Mock
     private TopicMapper topicMapper;
 
+    @Mock
+    private NewsSearchService newsSearchService;
+
     @InjectMocks
     private TopicServiceImpl topicService;
+
+    @Test
+    void testCheckUpdates() {
+        Long topicId = 1L;
+        Topic topic = Topic.builder().id(topicId).keyword("SpaceX").build();
+        NewsResult newsResult = new NewsResult("Title", "URL", "Snippet", LocalDateTime.now());
+
+        when(topicMapper.selectById(topicId)).thenReturn(topic);
+        when(newsSearchService.search("SpaceX")).thenReturn(List.of(newsResult));
+
+        topicService.checkUpdates(topicId);
+
+        verify(topicMapper).selectById(topicId);
+        verify(newsSearchService).search("SpaceX");
+    }
 
     @Test
     void testAddTopic() {

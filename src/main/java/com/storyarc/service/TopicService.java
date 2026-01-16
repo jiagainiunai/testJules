@@ -7,4 +7,5 @@ public interface TopicService {
     Topic addTopic(Topic topic);
     List<Topic> getAllTopics();
     Topic getTopicById(Long id);
+    void checkUpdates(Long topicId);
 }
